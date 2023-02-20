@@ -1,7 +1,8 @@
 A continuación se detallan tanto las funcionalidades del aplicativo como sus instrucciones.
 
 
-*Experiencia de sonido: Por favor dar clic al inicio de entrar a la aplicación para escuchar los sonidos configurados,
+*Experiencia de sonido: Por favor dar clic cuando se ingrese al aplicativo para escuchar los sonidos configurados,
+ya que los navegadores tienen su respectiva políticas de seguridad.
 
 se recomienda un volumen medio.
 
