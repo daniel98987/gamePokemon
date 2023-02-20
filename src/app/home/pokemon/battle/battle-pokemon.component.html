@@ -100,9 +100,13 @@
     </div>
     <div class="row col-12 mt-4 mb-2 " >
       <div class="col-4 justify-content-center">
-          <div class="form-group">
-            <input type="search" [(ngModel)]="searchTerm" class="form-control" placeholder="Filter Pokemon" (keyup)="onSearch(searchTerm)">
-          </div>
+        <div class="form-group">
+          <input type="text" [(ngModel)]="searchTerm" class="form-control" placeholder="Filter Pokemon" (keyup)="onSearch(searchTerm)"
+            maxlength="10"
+            (keyup)="onSearch(searchTerm)"
+            >
+        </div>
+
       </div>
     </div>
     <div class="row">

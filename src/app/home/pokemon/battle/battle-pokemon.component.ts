@@ -60,8 +60,8 @@ export class BattlePokemonComponent implements OnInit {
   }
   public divideArrayOfPokemons(length: number, resp: any) {
     const half = Math.ceil(length / 2);
-    this.lstPokemones = resp.slice(0, half); // Primera mitad
-    this.lstPokemones2 = resp.slice(half); // Segunda mitad
+    this.lstPokemones = resp.slice(0, half);
+    this.lstPokemones2 = resp.slice(half);
     this.lstPokemonesFilter = this.lstPokemones;
     this.lstPokemonesFilter2 = this.lstPokemones2;
   }
@@ -72,17 +72,17 @@ export class BattlePokemonComponent implements OnInit {
       const searchTypePokemon = this.pokemonsTypes.find((type: any) => element.type.name == type.name);
 
       if (searchTypePokemon) {
-        pokemon.damage_relation[0].array = this.filterDamage(pokemon.damage_relation[0].array, searchTypePokemon.damage_relations.double_damage_from)
-        pokemon.damage_relation[1].array = this.filterDamage(pokemon.damage_relation[1].array, searchTypePokemon.damage_relations.double_damage_to)
-        pokemon.damage_relation[2].array = this.filterDamage(pokemon.damage_relation[2].array, searchTypePokemon.damage_relations.half_damage_from)
-        pokemon.damage_relation[3].array = this.filterDamage(pokemon.damage_relation[3].array, searchTypePokemon.damage_relations.half_damage_to)
-        pokemon.damage_relation[4].array = this.filterDamage(pokemon.damage_relation[4].array, searchTypePokemon.damage_relations.no_damage_from)
-        pokemon.damage_relation[5].array = this.filterDamage(pokemon.damage_relation[5].array, searchTypePokemon.damage_relations.no_damage_to)
+        pokemon.damage_relation[0].array = this.filterDamageUnique(pokemon.damage_relation[0].array, searchTypePokemon.damage_relations.double_damage_from)
+        pokemon.damage_relation[1].array = this.filterDamageUnique(pokemon.damage_relation[1].array, searchTypePokemon.damage_relations.double_damage_to)
+        pokemon.damage_relation[2].array = this.filterDamageUnique(pokemon.damage_relation[2].array, searchTypePokemon.damage_relations.half_damage_from)
+        pokemon.damage_relation[3].array = this.filterDamageUnique(pokemon.damage_relation[3].array, searchTypePokemon.damage_relations.half_damage_to)
+        pokemon.damage_relation[4].array = this.filterDamageUnique(pokemon.damage_relation[4].array, searchTypePokemon.damage_relations.no_damage_from)
+        pokemon.damage_relation[5].array = this.filterDamageUnique(pokemon.damage_relation[5].array, searchTypePokemon.damage_relations.no_damage_to)
       }
     }
     return pokemon;
   }
-  public filterDamage(damage_relation: any[], damagaRelationOfType: any) {
+  public filterDamageUnique(damage_relation: any[], damagaRelationOfType: any) {
     if (damage_relation.length == 0) {
       damage_relation = [];
       damage_relation = damagaRelationOfType
@@ -97,7 +97,6 @@ export class BattlePokemonComponent implements OnInit {
       }
     }
     return damage_relation;
-
   }
 
   public getDescriptionDamage(description: string): string {
@@ -105,6 +104,11 @@ export class BattlePokemonComponent implements OnInit {
   }
 
   public arrayPuntuation(arrayFirst: any, arraySecond: any) {
+    var damage_relationObjectFirst = arrayFirst.damage_relationObject;
+    var damage_relationObjectSecond = arraySecond.damage_relationObject;
+    var arrayCointain: any = [];
+    var giveDamage = true;
+    var reciveDamage = false;
     var pokemonTypesFirstArray = arrayFirst.types.map((obj: any) => {
       delete obj.slot;
       return obj.type;
@@ -115,13 +119,6 @@ export class BattlePokemonComponent implements OnInit {
       return obj.type
     });
 
-
-    var damage_relationObjectFirst = arrayFirst.damage_relationObject;
-    var damage_relationObjectSecond = arraySecond.damage_relationObject;
-
-    var arrayCointain: any = [];
-    var giveDamage = true;
-    var reciveDamage = false;
 
     if (damage_relationObjectFirst.no_damage_to && damage_relationObjectFirst.no_damage_to.array.length > 0) {
       damage_relationObjectFirst.no_damage_to.array.forEach((element: any) => {
@@ -193,7 +190,7 @@ export class BattlePokemonComponent implements OnInit {
     return arrayCointain;
   }
 
-  public winnerPokemon(arrayDamageFirst: any, arrayDamageSecond: any) {
+  public getObjectWinnerPokemon(arrayDamageFirst: any, arrayDamageSecond: any) {
     var accumulate: ObjectWin = {
       accumulateFirstPokemon: 0,
       accumulateSecond: 0,
@@ -236,17 +233,17 @@ export class BattlePokemonComponent implements OnInit {
     this.selectSecondPokemon.damage_relationObject = this.formatTypeArrayDamage(this.selectSecondPokemon.damage_relation);
     this.selectFirstPokemon.damage_relationOverPokemonEnemy = this.arrayPuntuation(this.selectFirstPokemon, this.selectSecondPokemon);
     this.selectSecondPokemon.damage_relationOverPokemonEnemy = this.arrayPuntuation(this.selectSecondPokemon, this.selectFirstPokemon);
-    this.objectResultFigth = this.winnerPokemon(this.selectFirstPokemon.damage_relationOverPokemonEnemy, this.selectSecondPokemon.damage_relationOverPokemonEnemy);
+    this.objectResultFigth = this.getObjectWinnerPokemon(this.selectFirstPokemon.damage_relationOverPokemonEnemy, this.selectSecondPokemon.damage_relationOverPokemonEnemy);
     this.figth = false;
     this.resultFigth = true;
-    this.playAudioNoSelect();
-    this.playAudioNoSelect(this.msgOnView.SONG.endFigth);
+    this.playAudio();
+    this.playAudio(this.msgOnView.SONG.endFigth);
   }
 
   public selectPokemon(pokemon: any) {
     var okSounds = this.validationOverSounds(pokemon);
     if (okSounds) {
-      this.playAudioNoSelect(this.msgOnView.SONG.select);
+      this.playAudio(this.msgOnView.SONG.select);
     }
     if (!this.selectFirstPokemon) {
       this.selectFirstPokemon = this.loadDamageRelationPokemon(pokemon);
@@ -255,7 +252,7 @@ export class BattlePokemonComponent implements OnInit {
     if (!this.selectSecondPokemon && this.selectFirstPokemon && this.selectFirstPokemon.id !== pokemon.id) {
 
       this.selectSecondPokemon = this.loadDamageRelationPokemon(pokemon);;
-      this.playAudioNoSelect(this.msgOnView.SONG.figth);
+      this.playAudio(this.msgOnView.SONG.figth);
       this.figth = true;
 
     }
@@ -273,9 +270,6 @@ export class BattlePokemonComponent implements OnInit {
     })
 
   }
-  public arrayObjectPokemon() {
-
-  }
 
   public cleanPokemons() {
     this.lstPokemones = null; // Primera mitad
@@ -283,8 +277,6 @@ export class BattlePokemonComponent implements OnInit {
     this.selectFirstPokemon = null;
     this.selectSecondPokemon = null;
   }
-
-
 
   public validationOverSounds(pokemon: any) {
     return (this.selectFirstPokemon && this.selectFirstPokemon.id == pokemon.id
@@ -295,12 +287,11 @@ export class BattlePokemonComponent implements OnInit {
     this.pokemonMouseOver = pokemon;
     var okSounds = this.validationOverSounds(pokemon);
     if (okSounds) {
-      this.playAudioNoSelect(this.msgOnView.SONG.moveSelect)
+      this.playAudio(this.msgOnView.SONG.moveSelect)
     }
-
-
   }
-  public playAudioNoSelect(nombreArchivo?: string) {
+
+  public playAudio(nombreArchivo?: string) {
     if (nombreArchivo) {
 
       this.audio.volume = 1;
@@ -388,6 +379,8 @@ export class BattlePokemonComponent implements OnInit {
     this.infoPokemonRef.close();
   }
   public onSearch(searchTerm: any) {
+    const regex = /[^a-zA-Z]+/g; // solo permite letras del alfabeto
+    this.searchTerm =searchTerm.replace(regex, '');
     this.lstPokemonesFilter = this.lstPokemones?.filter(pokemon => pokemon.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
     this.lstPokemonesFilter2 = this.lstPokemones2?.filter(pokemon => pokemon.name.toLowerCase().startsWith(searchTerm.toLowerCase()));
   }
