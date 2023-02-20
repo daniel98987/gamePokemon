@@ -1,0 +1,294 @@
+
+
+<body class="full-width-container ">
+  <div class="container pokeball-cursor">
+    <div class="row col-12 mt-4">
+      <div class="row">
+        <div class="col-6">
+          <div class="row col-12 justify-content-center">
+            <div class="col-8">
+              <mat-dialog-content>
+                <mat-card class="mt-2 mb-4 custom-image-card-figth  styled-element">
+                  <mat-card-header>
+                    <div mat-card-avatar class="example-header-image"></div>
+                    <mat-card-title>{{msgOnView.INFORMATIO_POKEMON.fistPokemon}}</mat-card-title>
+                    <mat-card-subtitle
+                      style="color: white;">{{selectFirstPokemon?selectFirstPokemon.name:msgOnView.INFORMATIO_POKEMON.cardPokemon | titlecase}}</mat-card-subtitle>
+                  </mat-card-header>
+                  <img class="col-12 img-fluid custom-image  mb-4" mat-card-image
+                    [src]="selectFirstPokemon?selectFirstPokemon.sprites.front_default: msgOnView.IMG.first_pokemon_dafult"
+                  />
+                  <div class="mt-4" *ngIf="selectSecondPokemon && selectFirstPokemon && selectFirstPokemon.types">
+                    <h3>{{msgOnView.INFORMATIO_POKEMON.typesPokemon}}</h3>
+                    <mat-chip-list>
+                      <mat-chip *ngFor="let type of selectFirstPokemon.types">
+                        {{type.type.name|titlecase}}
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
+                </mat-card>
+              </mat-dialog-content>
+            </div>
+            <div class="row col-12 justify-content-center">
+              <div class="col-6" *ngIf="resultFigth && objectResultFigth?.ganador!==2 ">
+                <ng-container
+                  *ngTemplateOutlet="loseWin; context: { loseWin: objectResultFigth?.ganador==0?true:false }"></ng-container>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="row col-12 justify-content-center">
+            <div class="col-8">
+              <mat-dialog-content >
+                <mat-card class="mt-2 mb-4 custom-image-card-figth styled-element ">
+                  <mat-card-header>
+                    <div mat-card-avatar class="example-header-image"></div>
+                    <mat-card-title>{{msgOnView.INFORMATIO_POKEMON.secondPokemon}}</mat-card-title>
+                    <mat-card-subtitle
+                      style="color: white;">{{selectSecondPokemon?selectSecondPokemon.name:msgOnView.INFORMATIO_POKEMON.cardPokemon | titlecase}}</mat-card-subtitle>
+                  </mat-card-header>
+                  <img class="col-12 img-fluid custom-image  mb-4" mat-card-image
+                    [src]="selectSecondPokemon?selectSecondPokemon.sprites.front_default: msgOnView.IMG.second_pokemon_dafult"
+                  />
+                  <div class="mt-4 " *ngIf="selectFirstPokemon && selectSecondPokemon && selectFirstPokemon.types">
+                    <h3>{{msgOnView.INFORMATIO_POKEMON.typesPokemon}}</h3>
+                    <mat-chip-list>
+                      <mat-chip *ngFor="let type of selectSecondPokemon.types">
+
+                        {{type.type.name|titlecase}}
+                      </mat-chip>
+                    </mat-chip-list>
+                  </div>
+                </mat-card>
+              </mat-dialog-content>
+            </div>
+            <div class="row col-12 justify-content-center">
+              <div class="col-6" *ngIf="resultFigth && objectResultFigth?.ganador!==2 ">
+                <ng-container
+                  *ngTemplateOutlet="loseWin; context: { loseWin: objectResultFigth?.ganador==1?true:false }"></ng-container>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="col-12 mt-2   mb-4">
+          <div class="row col-12 justify-content-center">
+            <div class="col-3" *ngIf="figth" (click)="figthValidation()">
+              <img  class="mx-auto" width="350px" height="200px" [src]="msgOnView.IMG.figth"
+              style="background-color: transparent" />
+              <h1 class="text-center text-figth">{{msgOnView.INFORMATIO_POKEMON.clickOnTheImage}}</h1>
+            </div>
+
+            <div class="col-4" *ngIf="resultFigth && objectResultFigth?.ganador==2">
+              <img class="mx-auto" width="400px" height="250px" [src]="msgOnView.IMG.draw"
+                style="background-color: transparent" />
+            </div>
+          </div>
+
+        </div>
+        <div class="col-12 mt-2 mb-4 d-flex justify-content-center" *ngIf="objectResultFigth">
+          <button (click)="cleanGame()" style="margin-right: 5px;" class="btn-block text-information" mat-raised-button>Play
+            again</button>
+          <button (click)="openDialogPokemon(null,1)" style="margin-left: 5px;" class="btn-block text-information"
+            mat-raised-button>Information of battle</button>
+        </div>
+
+      </div>
+
+    </div>
+    <div class="row col-12 mt-4 mb-2 " >
+      <div class="col-4 justify-content-center">
+          <div class="form-group">
+            <input type="search" [(ngModel)]="searchTerm" class="form-control" placeholder="Filter Pokemon" (keyup)="onSearch(searchTerm)">
+          </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-6">
+        <ng-container *ngTemplateOutlet="templateArrayPokemon; context: { pokemones: lstPokemonesFilter }"></ng-container>
+      </div>
+      <div class="col-6">
+        <ng-container *ngTemplateOutlet="templateArrayPokemon; context: { pokemones: lstPokemonesFilter2 }"></ng-container>
+      </div>
+      <ng-template #templateArrayPokemon let-pokemones="pokemones">
+        <div class="row">
+          <div style="margin: 5px; transform: skew(-10deg);" *ngFor="let pokemon of pokemones" class="col-2 col-lg-2">
+            <img (click)="selectPokemon(pokemon)" (mouseenter)="validateMouseenter(pokemon)"
+              (mouseleave)="pokemonMouseOver = null" [ngClass]="getStyle(pokemon)" height="90px" width="90px"
+              [src]="pokemon.sprites.front_default" />
+
+            <span *ngIf="selectFirstPokemon && selectFirstPokemon.id == pokemon.id" class="image-label"
+              style="transform: skew(-10deg);">1P</span>
+            <span *ngIf="selectSecondPokemon && selectSecondPokemon.id == pokemon.id" class="image-label"
+              style="transform: skew(-10deg);">2P</span>
+            <p class="pokemon-name" (click)="openDialogPokemon(pokemon,0)">{{pokemon.name|titlecase}}</p>
+
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #infoPokemon>
+        <div class="container" *ngIf="!resultsViewInformation">
+          <h2 matDialogTitle>{{msgOnView.INFORMATIO_POKEMON.infoPokemon}}</h2>
+
+          <!-- <div class="col-xs-12 col-md-12 form-group">
+              <mat-label>{{pokemonInfo.name}}</mat-label>
+          </div> -->
+          <div class="col-sm-12">
+
+            <mat-dialog-content>
+              <mat-card class="mt-2 mb-2 custom-image-card">
+                <mat-card-header>
+                  <div mat-card-avatar class="example-header-image"></div>
+                  <mat-card-title>{{pokemonInfo.name|titlecase}}</mat-card-title>
+                  <mat-card-subtitle>{{msgOnView.INFORMATIO_POKEMON.cardPokemon}}</mat-card-subtitle>
+                </mat-card-header>
+                <img class="col-12 img-fluid custom-image " mat-card-image [src]="imageShow"
+                />
+                <div class="mt-4">
+                  <h3> <strong> {{msgOnView.INFORMATIO_POKEMON.typesPokemon}}</strong></h3>
+                  <mat-chip-list *ngIf="pokemonInfo.types && pokemonInfo.types.length>0">
+                    <mat-chip *ngFor="let type of pokemonInfo.types">
+                      <!-- <img matChipAvatar src="https://material.angular.io/assets/img/examples/shiba1.jpg" /> -->
+                      {{type.type.name|titlecase}}
+                    </mat-chip>
+
+                  </mat-chip-list>
+                </div>
+                <h4 class="mt-1 mb-2"><strong>{{msgOnView.INFORMATIO_POKEMON.relationDamage}}</strong> </h4>
+                <mat-divider></mat-divider>
+                       <ng-container *ngTemplateOutlet="tableResults; context: { dataTable: this.pokemonInfo.damage_relation}"></ng-container>
+                 <mat-divider></mat-divider>
+                 <h4 class="mt-1 mb-2"><strong> {{msgOnView.INFORMATIO_POKEMON.infoPokemon}}</strong></h4>
+                 <mat-card-content class="mt-4">
+                  <table mat-table [dataSource]="dataSourcePokemon" matSort class="col-12 full-width custom-table">
+
+                    <ng-container matColumnDef="information">
+                      <th mat-header-cell *matHeaderCellDef> {{msgOnView.INFORMATIO_POKEMON.information}} </th>
+                      <td mat-cell *matCellDef="let element">
+                        <p>{{element.stat.name|titlecase}}: {{element.base_stat}}</p>
+                      </td>
+                    </ng-container>
+                    <ng-container matColumnDef="description">
+                      <th mat-header-cell *matHeaderCellDef> {{msgOnView.INFORMATIO_POKEMON.description}} </th>
+                      <td mat-cell *matCellDef="let element">
+                        <div class="progress">
+                          <div #progressBar [ngStyle]="{ 'background-color': element.color }" class="progress-bar"
+                            role="progressbar" [style.width]="element.base_stat + 'px'" aria-valuemin="0"
+                            aria-valuemax="100"></div>
+                        </div>
+
+                      </td>
+                    </ng-container>
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns "></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                  </table>
+                </mat-card-content>
+
+              </mat-card>
+            </mat-dialog-content>
+
+
+          </div>
+          <div class="row  d-flex justify-content-end mt-2">
+            <div class="col-2">
+              <button style="background-color: rgb(245, 36, 36)!important;" mat-raised-button type="button"
+                (click)="cerrarInfoPokemon()" color="primary" class="pull-right">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="container" style="overflow: auto" *ngIf="resultsViewInformation">
+          <h2 matDialogTitle>{{msgOnView.INFORMATIO_POKEMON.infoPokemonBatlle}}</h2>
+          <p>{{msgOnView.INFORMATIO_POKEMON.explaination}}</p>
+          <div class="row col-12">
+            <div class="col-4">
+              <mat-list>
+                <mat-list-item *ngFor="let damage of objectDamage; last as last">
+                  <h4 mat-line><strong>{{damage.name}}</strong>: {{damage.value}}</h4>
+                  <p mat-line class=" descriptionInformatio"> {{ getDescriptionDamage(damage.name) }}</p>
+                  <mat-divider [inset]="true" *ngIf="!last"></mat-divider>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+              </mat-list>
+            </div>
+            <div class="col-8">
+              <div class="col-12">
+                <h4> <strong>{{selectFirstPokemon.name | titlecase}}</strong> </h4>
+                <mat-chip-list>
+                  <mat-chip *ngFor="let type of selectFirstPokemon?.types">
+                    {{type.type.name|titlecase}}
+                  </mat-chip>
+                </mat-chip-list>
+                <ng-container
+                  *ngTemplateOutlet="tableResults; context: { dataTable: this.selectFirstPokemon?.damage_relationOverPokemonEnemy }"></ng-container>
+                <h4>{{msgOnView.INFORMATIO_POKEMON.puntuation}}: {{objectResultFigth?.accumulateFirstPokemon}} </h4>
+              </div>
+              <div class="col-12">
+                <h4><strong>{{selectSecondPokemon.name | titlecase}}</strong> </h4>
+                <mat-chip-list>
+                  <mat-chip *ngFor="let type of selectSecondPokemon.types">
+                    {{type.type.name|titlecase}}
+                  </mat-chip>
+                </mat-chip-list>
+                <ng-container
+                  *ngTemplateOutlet="tableResults; context: { dataTable: this.selectSecondPokemon.damage_relationOverPokemonEnemy}"></ng-container>
+                <h4>{{msgOnView.INFORMATIO_POKEMON.puntuation}}: {{objectResultFigth?.accumulateSecond}} </h4>
+              </div>
+            </div>
+          </div>
+          <mat-divider></mat-divider>
+          <div class="col-12 row">
+            <h1 *ngIf="objectResultFigth?.ganador== 2">{{msgOnView.INFORMATIO_POKEMON.resultOfBattle}}: {{msgOnView.INFORMATIO_POKEMON.draw}}</h1>
+            <h1 *ngIf="objectResultFigth?.ganador== 0">{{msgOnView.INFORMATIO_POKEMON.winnerIs}}: {{selectFirstPokemon?.name|titlecase}} </h1>
+            <h1 *ngIf="objectResultFigth?.ganador== 1">{{msgOnView.INFORMATIO_POKEMON.winnerIs}}: {{selectSecondPokemon.name|titlecase}} </h1>
+          </div>
+
+          <div class="row  d-flex justify-content-end mt-2">
+            <div class="col-2">
+              <button style="background-color: rgb(245, 36, 36)!important;" mat-raised-button type="button"
+                (click)="cerrarInfoPokemon()" color="primary" class="pull-right">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-template>
+      <ng-template #loseWin let-loseWin="loseWin">
+        <img *ngIf="loseWin"class="mx-auto" width="280px" height="200px" [src]="msgOnView.IMG.win"
+        style="background-color: transparent" />
+        <img *ngIf="!loseWin" class="mx-auto" width="200px" height="200px" [src]="msgOnView.IMG.lose"
+        style="background-color: transparent" />
+      </ng-template>
+      <ng-template #tableResults let-dataTable="dataTable">
+        <table mat-table [dataSource]="dataTable" matSort class="col-12 full-width custom-table">
+          <ng-container matColumnDef="name" >
+            <th mat-header-cell *matHeaderCellDef> {{msgOnView.INFORMATIO_POKEMON.information}} </th>
+            <td mat-cell *matCellDef="let element" style="width: 33.33%;padding: 5px;" >
+              <p>{{element.name|titlecase}}</p>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="type">
+            <th mat-header-cell *matHeaderCellDef> {{msgOnView.INFORMATIO_POKEMON.typesPokemon}} </th>
+            <td mat-cell *matCellDef="let element" style="width: 33.33%;padding: 5px;">
+              <div *ngIf="element.array.length > 0">
+                <p *ngFor="let item of element.array" style="display: inline">{{ item.name}} </p>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="puntuation">
+            <th mat-header-cell *matHeaderCellDef> {{msgOnView.INFORMATIO_POKEMON.puntuation}} </th>
+            <td mat-cell *matCellDef="let element" style="width: 33.33%;padding: 5px;">
+              <p>{{element.value}}</p>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedResults "></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedResults"></tr>
+        </table>
+      </ng-template>
+    </div>
+  </div>
+</body>
+
